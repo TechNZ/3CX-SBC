@@ -44,16 +44,18 @@ chmod 700 /etc/wireguard
 WG_PRIV=$(wg genkey)
 WG_PUB=$(echo "$WG_PRIV" | wg pubkey)
 
-cat > /etc/wireguard/wg0.conf <<EOF
-[Interface]
-PrivateKey = $WG_PRIV
-Address = 10.255.255.1/32
-ListenPort = 51820
-
-[Peer]
-PublicKey = $WG_PUB
-Endpoint = 127.0.0.1:51820
-EOF
+if [ ! -f "config.txt" ]; then
+  cat > /etc/wireguard/wg0.conf <<EOF
+  [Interface]
+  PrivateKey = $WG_PRIV
+  Address = 10.255.255.1/32
+  ListenPort = 51820
+  
+  [Peer]
+  PublicKey = $WG_PUB
+  Endpoint = 127.0.0.1:51820
+  EOF
+fi
 
 chmod 600 /etc/wireguard/wg0.conf
 systemctl enable wg-quick@wg0
