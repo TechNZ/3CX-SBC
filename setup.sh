@@ -44,18 +44,16 @@ chmod 700 /etc/wireguard
 WG_PRIV=$(wg genkey)
 WG_PUB=$(echo "$WG_PRIV" | wg pubkey)
 
-if [ ! -f "/etc/wireguard/wg0.conf" ]; then
-  cat > /etc/wireguard/wg0.conf <<EOF
-  [Interface]
-  PrivateKey = $WG_PRIV
-  Address = 10.255.255.1/32
-  ListenPort = 51820
-  
-  [Peer]
-  PublicKey = $WG_PUB
-  Endpoint = 127.0.0.1:51820
-  EOF
-fi
+cat > /etc/wireguard/wg0.conf <<EOF
+[Interface]
+PrivateKey = $WG_PRIV
+Address = 10.255.255.1/32
+ListenPort = 51820
+
+[Peer]
+PublicKey = $WG_PUB
+Endpoint = 127.0.0.1:51820
+EOF
 
 chmod 600 /etc/wireguard/wg0.conf
 systemctl enable wg-quick@wg0
@@ -121,7 +119,7 @@ CONF="/etc/wireguard/wg0.conf"
 if [[ -z "$INPUT" || ! -f "$INPUT" ]]; then exit 1; fi
 
 grep -v '^AllowedIPs' "$INPUT" > "$CONF"
-echo "AllowedIPs = 192.168.22.0/24, 192.168.9.0/24" >> "$CONF"
+echo "AllowedIPs = 192.168.3.1/32" >> "$CONF"
 echo "PersistentKeepalive = 25" >> "$CONF"
 
 chmod 600 "$CONF"
