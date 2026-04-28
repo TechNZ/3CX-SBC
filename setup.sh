@@ -113,13 +113,67 @@ cat > /usr/local/sbin/update-wireguard.sh <<'EOF'
 #!/usr/bin/env bash
 set -e
 
-INPUT="$1"
 CONF="/etc/wireguard/wg0.conf"
 
-if [[ -z "$INPUT" || ! -f "$INPUT" ]]; then exit 1; fi
+POSTUP='PostUp = /usr/local/sbin/wg-conditional-route.sh up'
+PREDOWN='PreDown = /usr/local/sbin/wg-conditional-route.sh down'
+NEW_ALLOWED='AllowedIPs = 192.168.3.1/32'
 
-grep -v '^AllowedIPs' "$INPUT" > "$CONF"
-echo "AllowedIPs = 192.168.3.1/32" >> "$CONF"
+if [[ ! -f "$CONF" ]]; then
+    echo "Config not found: $CONF"
+    exit 1
+fi
+
+tmp="$(mktemp)"
+
+awk -v postup="$POSTUP" \
+    -v predown="$PREDOWN" \
+    -v allowed="$NEW_ALLOWED" '
+BEGIN {
+    in_interface = 0
+    has_post = 0
+    has_pre  = 0
+}
+
+/^\[Interface\]/ {
+    in_interface = 1
+    print
+    next
+}
+
+/^\[Peer\]/ {
+    if (in_interface) {
+        if (!has_post) print postup
+        if (!has_pre)  print predown
+        in_interface = 0
+    }
+    print
+    next
+}
+
+/^PostUp[[:space:]]*=/ { has_post = 1 }
+/^PreDown[[:space:]]*=/ { has_pre  = 1 }
+
+/^AllowedIPs[[:space:]]*=/ {
+    print allowed
+    next
+}
+
+{
+    print
+}
+
+END {
+    if (in_interface) {
+        if (!has_post) print postup
+        if (!has_pre)  print predown
+    }
+}
+' "$CONF" > "$tmp"
+
+mv "$tmp" "$CONF"
+chmod 600 "$CONF"
+chown root:root "$CONF"
 echo "PersistentKeepalive = 25" >> "$CONF"
 
 chmod 600 "$CONF"
