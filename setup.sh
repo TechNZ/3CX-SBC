@@ -116,12 +116,79 @@ set -e
 INPUT="$1"
 CONF="/etc/wireguard/wg0.conf"
 
-if [[ -z "$INPUT" || ! -f "$INPUT" ]]; then exit 1; fi
+POSTUP='PostUp = /usr/local/bin/wg-conditional-route up'
+PREDOWN='PreDown = /usr/local/bin/wg-conditional-route down'
 
-grep -v '^AllowedIPs' "$INPUT" > "$CONF"
-echo "AllowedIPs = 192.168.3.1/32" >> "$CONF"
-echo "PersistentKeepalive = 25" >> "$CONF"
+if [[ -z "$INPUT" || ! -f "$INPUT" ]]; then
+    echo "Usage: $0 <input-wireguard.conf>"
+    exit 1
+fi
 
+tmp="$(mktemp)"
+
+awk -v postup="$POSTUP" -v predown="$PREDOWN" '
+BEGIN {
+    in_interface = 0
+    wrote_post = 0
+    wrote_pre  = 0
+}
+
+# Strip all AllowedIPs (handled later)
+/^AllowedIPs[[:space:]]*=/ {
+    next
+}
+
+# Interface section start
+/^\[Interface\]/ {
+    in_interface = 1
+    print
+    next
+}
+
+# Peer section start – close Interface section
+/^\[Peer\]/ {
+    if (in_interface) {
+        if (!wrote_post) print postup
+        if (!wrote_pre)  print predown
+        in_interface = 0
+    }
+    print
+    next
+}
+
+# Replace PostUp / PreDown if they exist
+/^PostUp[[:space:]]*=/ {
+    print postup
+    wrote_post = 1
+    next
+}
+
+/^PreDown[[:space:]]*=/ {
+    print predown
+    wrote_pre = 1
+    next
+}
+
+{
+    print
+}
+
+# Handle configs with no [Peer] section
+END {
+    if (in_interface) {
+        if (!wrote_post) print postup
+        if (!wrote_pre)  print predown
+    }
+}
+' "$INPUT" > "$tmp"
+
+# Append peer directives as per original script
+{
+    echo "AllowedIPs = 192.168.3.1/32"
+    echo "PersistentKeepalive = 25"
+} >> "$tmp"
+
+mv "$tmp" "$CONF"
 chmod 600 "$CONF"
 chown root:root "$CONF"
 
