@@ -1,0 +1,14 @@
+
+[Interface]
+PrivateKey = <client_private_key>
+Address = 10.0.0.2/32
+DNS = 1.1.1.1
+
+PostUp   = /usr/local/bin/wg-conditional-route up
+PreDown  = /usr/local/bin/wg-conditional-route down
+
+[Peer]
+PublicKey = <server_public_key>
+Endpoint = vpn.example.com:51820
+AllowedIPs = 10.0.0.0/24
+PersistentKeepalive = 25
