@@ -119,7 +119,7 @@ CONF="/etc/wireguard/wg0.conf"
 if [[ -z "$INPUT" || ! -f "$INPUT" ]]; then exit 1; fi
 
 grep -v '^AllowedIPs' "$INPUT" > "$CONF"
-echo "AllowedIPs = 192.168.3.1/32" >> "$CONF"
+echo "AllowedIPs = 192.168.22.0/24, 192.168.9.0/24" >> "$CONF"
 echo "PersistentKeepalive = 25" >> "$CONF"
 
 chmod 600 "$CONF"
