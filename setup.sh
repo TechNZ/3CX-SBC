@@ -136,7 +136,7 @@ cat > /usr/local/sbin/wg-conditional-route.sh <<'EOF'
 set -e
 
 WG_IFACE="wg0"
-SUBNET="192.168.24.0/24"
+SUBNET="192.168.22.0/24"
 
 ACTION="$1"
 
