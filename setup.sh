@@ -44,7 +44,7 @@ chmod 700 /etc/wireguard
 WG_PRIV=$(wg genkey)
 WG_PUB=$(echo "$WG_PRIV" | wg pubkey)
 
-if [ ! -f "/etc/wireguard/wg0.con" ]; then
+if [ ! -f "/etc/wireguard/wg0.conf" ]; then
   cat > /etc/wireguard/wg0.conf <<EOF
   [Interface]
   PrivateKey = $WG_PRIV
