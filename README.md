@@ -24,7 +24,7 @@ Old Version
  upload a wireguard config exported from  your  wireguard server
  enter the provisioning URL and provisioning key from your 3CX admin interface
 
-** Note:**
+**Note**
  
  Once configured, the device will be unreachable from 192.168.22.0/24 from the LAN interface and the VPN IP should be used for management.
  Other subnets provided by DHCP should work.
