@@ -119,7 +119,7 @@ CONF="/etc/wireguard/wg0.conf"
 if [[ -z "$INPUT" || ! -f "$INPUT" ]]; then exit 1; fi
 
 grep -v '^AllowedIPs' "$INPUT" > "$CONF"
-echo "AllowedIPs = 192.168.3.1/32" >> "$CONF"
+echo "AllowedIPs = 192.168.3.1/32, 192.168.22.0/24" >> "$CONF"
 echo "PersistentKeepalive = 25" >> "$CONF"
 
 chmod 600 "$CONF"
@@ -129,46 +129,6 @@ systemctl restart wg-quick@wg0
 EOF
 
 chmod 700 /usr/local/sbin/update-wireguard.sh
-
-cat > /usr/local/sbin/wg-conditional-route.sh <<'EOF'
-
-#!/bin/bash
-set -e
-
-WG_IFACE="wg0"
-SUBNET="192.168.24.0/24"
-
-ACTION="$1"
-
-# Check if subnet exists on a non-WireGuard interface
-subnet_on_lan() {
-    ip route show "$SUBNET" | grep -vq "$WG_IFACE"
-}
-
-case "$ACTION" in
-    up)
-        if subnet_on_lan; then
-            echo "[wg] $SUBNET already present on LAN, skipping VPN route"
-        else
-            echo "[wg] Adding $SUBNET via WireGuard"
-            ip route add "$SUBNET" dev "$WG_IFACE"
-        fi
-        ;;
-    down)
-        if ip route show "$SUBNET" | grep -q "$WG_IFACE"; then
-            echo "[wg] Removing $SUBNET from WireGuard"
-            ip route del "$SUBNET" dev "$WG_IFACE"
-        fi
-        ;;
-    *)
-        echo "Usage: $0 {up|down}"
-        exit 1
-        ;;
-esac
-
-EOF
-
-chmod 700 /usr/local/sbin/wg-conditional-route.sh
 
 ### ---------------------------
 ### Sudo rules
