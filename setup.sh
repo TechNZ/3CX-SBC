@@ -116,8 +116,8 @@ set -e
 INPUT="$1"
 CONF="/etc/wireguard/wg0.conf"
 
-POSTUP='PostUp = /usr/local/bin/wg-conditional-route.sh up'
-PREDOWN='PreDown = /usr/local/bin/wg-conditional-route.sh down'
+POSTUP='PostUp = /usr/local/sbin/wg-conditional-route.sh up'
+PREDOWN='PreDown = /usr/local/sbin/wg-conditional-route.sh down'
 if [[ -z "$INPUT" || ! -f "$INPUT" ]]; then
     echo "Usage: $0 <input-wireguard.conf>"
     exit 1
