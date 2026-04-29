@@ -10,10 +10,12 @@ To Install:
   As a user with sudo permissions run the below command.
 
   New Version (Untested)
+  
  `curl -fsSL https://raw.githubusercontent.com/TechNZ/3CX-SBC/refs/heads/main/setup.sh | sudo bash`
 
 Old Version
-``curl -fsSL https://raw.githubusercontent.com/TechNZ/3CX-SBC/refs/heads/main/old_setup.sh | sudo bash``
+
+`curl -fsSL https://raw.githubusercontent.com/TechNZ/3CX-SBC/refs/heads/main/old_setup.sh | sudo bash`
 
 
 To configure:
