@@ -15,7 +15,7 @@ To Install:
 
 Old Version
 
-`curl -fsSL https://raw.githubusercontent.com/TechNZ/3CX-SBC/refs/heads/main/old_setup.sh | sudo bash`
+`curl -fsSL https://raw.githubusercontent.com/TechNZ/3CX-SBC/refs/heads/main/setup_old.sh | sudo bash`
 
 
 To configure:
