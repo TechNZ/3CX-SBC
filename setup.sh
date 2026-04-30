@@ -88,7 +88,7 @@ fi
 echo "=== Set DNS ==="
 
 mkdir -p /etc/resolvconf/resolv.conf.d
-mk
+
 cat > /etc/resolvconf/resolv.conf.d/base <<'EOF'
 nameserver 8.8.8.8
 nameserver 8.8.4.4
