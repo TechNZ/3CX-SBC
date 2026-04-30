@@ -237,7 +237,8 @@ case "$ACTION" in
             echo "[wg] $SUBNET already present on LAN, skipping VPN route"
         else
             echo "[wg] Adding $SUBNET via WireGuard"
-            sudo wg set wg0 peer "$peer_key" allowed-ips 192.168.3.1/32, 192.168.22.0/24
+            wg set wg0 peer "$peer_key" allowed-ips 192.168.3.1/32,192.168.22.0/24
+            ip route add "$SUBNET" dev "$WG_IFACE"
         fi
         ;;
     down)
