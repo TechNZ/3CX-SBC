@@ -221,6 +221,7 @@ cat > /usr/local/sbin/wg-conditional-route.sh <<'EOF'
 set -e
 
 WG_IFACE="wg0"
+peer_key=$(grep PublicKey /etc/wireguard/wg0.conf | awk '{print $3}')
 SUBNET="192.168.22.0/24"
 
 ACTION="$1"
@@ -236,13 +237,14 @@ case "$ACTION" in
             echo "[wg] $SUBNET already present on LAN, skipping VPN route"
         else
             echo "[wg] Adding $SUBNET via WireGuard"
-            ip route add "$SUBNET" dev "$WG_IFACE"
+            sudo wg set wg0 peer "$peer_key" allowed-ips 192.168.3.1/32, 192.168.22.0/24
         fi
         ;;
     down)
         if ip route show "$SUBNET" | grep -q "$WG_IFACE"; then
-            echo "[wg] Removing $SUBNET from WireGuard"
-            ip route del "$SUBNET" dev "$WG_IFACE"
+            echo "[wg] Wireguard shutting down"
+            #echo "[wg] Removing $SUBNET from WireGuard"
+            #ip route del "$SUBNET" dev "$WG_IFACE"
         fi
         ;;
     *)
