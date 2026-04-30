@@ -83,6 +83,25 @@ else
   echo "WARNING: 3cxsbc package not available for this architecture"
 fi
 
+
+
+echo "=== Set DNS ==="
+
+mkdir -p /etc/resolvconf/resolv.conf.d
+mk
+cat > /etc/resolvconf/resolv.conf.d/base <<'EOF'
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+nameserver 1.1.1.1
+EOF
+
+chmod 755 /etc/resolvconf/resolv.conf.d/base
+chown root:root /etc/resolvconf/resolv.conf.d/base
+
+resolvconf -u
+
+
+
 ### ---------------------------
 ### Helper scripts
 ### ---------------------------
