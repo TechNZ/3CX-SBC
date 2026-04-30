@@ -9,11 +9,11 @@
 
   As a user with sudo permissions run the below command.
 
-  New Version (Untested)
+  New Version (Does not break LAN access when 192.168.22.0/24 is on LAN)
   
  `curl -fsSL https://raw.githubusercontent.com/TechNZ/3CX-SBC/refs/heads/main/setup.sh | sudo bash`
 
-Old Version
+Old Version (Breaks LAN access when 192.168.22.0/24 is on LAN)
 
 `curl -fsSL https://raw.githubusercontent.com/TechNZ/3CX-SBC/refs/heads/main/setup_old.sh | sudo bash`
 
